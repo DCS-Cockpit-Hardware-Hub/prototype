@@ -78,7 +78,7 @@ def dcspy_run( event: Event) -> None:
     parser.write_callbacks.add(update_display)
     _handle_connection(parser, _prepare_socket(), event)
 
-th = Thread(target=dcspy_run, args={event:Event()})
+th = Thread(target=dcspy_run, args=[Event()])
 th.start()
 #dcspy_run(event=Event())
  
