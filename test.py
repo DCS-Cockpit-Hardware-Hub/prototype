@@ -78,8 +78,9 @@ def dcspy_run( event: Event) -> None:
     parser.write_callbacks.add(update_display)
     _handle_connection(parser, _prepare_socket(), event)
 
-
-dcspy_run(event=Event())
+th = threading.Thread(target=dcspy_run, args=(Event()))
+th.start()
+#dcspy_run(event=Event())
  
 window_surface = pygame.display.set_mode((800, 480))
 background = pygame.Surface((800, 480))
