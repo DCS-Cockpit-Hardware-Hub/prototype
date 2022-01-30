@@ -17,7 +17,7 @@ from logging import getLogger
 from dcsbios import ProtocolParser, StringBuffer, IntegerBuffer
 
 pygame.init()
-pygame.mouse.set_visible(False)
+
 
 LOG = getLogger(__name__)
 
@@ -62,19 +62,22 @@ def update_display(address, data):
     if hex(address) == '0x7494':
         print("RPM R:")
         data_bytes = struct.pack("<H", data)
-        print(string(data_bytes))
+        print(str(data_bytes))
     if hex(address) == '0x7496':
         print("RPM L:")
         data_bytes = struct.pack("<H", data)
-        print(string(data_bytes))
+        print(str(data_bytes))
+        rpm_left.set_text(data_bytes.decode('utf-8'))
         
-def DcsBios_Sync( event: Event) -> None:
+def dcspy_run( event: Event) -> None:
+    """
+    Real starting point of DCSpy.
+    :param lcd_type: LCD handling class as string
+    :param event: stop event for main loop
+    """
     parser = ProtocolParser()
     parser.write_callbacks.add(update_display)
     _handle_connection(parser, _prepare_socket(), event)
-
-th = Thread(target=DcsBios_Sync, args=[Event()])
-th.start()
 
 
  
@@ -88,9 +91,15 @@ hello_button = pygame_gui.elements.UIButton(relative_rect=pygame.Rect((350, 275)
                                             text='Say Hello',
                                             manager=manager)
 
+rpm_left = pygame_gui.elements.UILabel(relative_rect=pygame.Rect((10, 10), (100, 50)),
+text='0',
+manager=manager)
+
 clock = pygame.time.Clock()
 is_running = True
-
+th = Thread(target=dcspy_run, args=[Event()])
+th.start()
+pygame.mouse.set_visible(False)
 while is_running:
     time_delta = clock.tick(60)/1000.0
     for event in pygame.event.get():
