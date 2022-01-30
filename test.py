@@ -1,5 +1,15 @@
+#!python3
+
+from __future__ import print_function
+
+import socket
+from threading import Event
+import sys
+import struct
 import pygame
 import os
+from logging import getLogger
+from dcsbios import ProtocolParser, StringBuffer, IntegerBuffer
 
 pygame.init()
 pygame.mouse.set_visible(False)
