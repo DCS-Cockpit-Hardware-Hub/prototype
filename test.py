@@ -7,7 +7,7 @@ RECV_ADDR = ('', 5010)
 MULTICAST_IP = '239.255.50.10'
 
 import socket
-from threading import Event
+from threading import Event,Thread
 import sys
 import struct
 import pygame
@@ -78,7 +78,7 @@ def dcspy_run( event: Event) -> None:
     parser.write_callbacks.add(update_display)
     _handle_connection(parser, _prepare_socket(), event)
 
-th = threading.Thread(target=dcspy_run, args=(Event()))
+th = Thread(target=dcspy_run, args=(Event()))
 th.start()
 #dcspy_run(event=Event())
  
