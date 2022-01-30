@@ -2,6 +2,10 @@
 
 from __future__ import print_function
 
+SEND_ADDR = ('192.168.1.203', 7778)
+RECV_ADDR = ('', 5010)
+MULTICAST_IP = '239.255.50.10'
+
 import socket
 from threading import Event
 import sys
