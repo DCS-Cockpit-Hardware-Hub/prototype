@@ -63,6 +63,19 @@ def update_display(address, data):
         print("RPM L:")
         data_bytes = struct.pack("<H", data)
         print(int(data_bytes))
+        
+def dcspy_run( event: Event) -> None:
+    """
+    Real starting point of DCSpy.
+    :param lcd_type: LCD handling class as string
+    :param event: stop event for main loop
+    """
+    parser = ProtocolParser()
+    parser.write_callbacks.add(update_display)
+    _handle_connection(parser, _prepare_socket(), event)
+
+
+dcspy_run(event=Event())
  
 window_surface = pygame.display.set_mode((800, 480))
 background = pygame.Surface((800, 480))
