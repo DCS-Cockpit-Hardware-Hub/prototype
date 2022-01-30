@@ -14,6 +14,55 @@ from dcsbios import ProtocolParser, StringBuffer, IntegerBuffer
 
 pygame.init()
 pygame.mouse.set_visible(False)
+
+LOG = getLogger(__name__)
+
+def _handle_connection(parser: ProtocolParser, sock: socket.socket, event: Event) -> None:
+    while not event.is_set():
+        try:
+            dcs_bios_resp = sock.recv(2048)
+            for int_byte in dcs_bios_resp:
+                parser.process_byte(int_byte)
+        except socket.error as exp:
+            _sock_err_handler( exp)
+
+
+
+def _sock_err_handler(exp: Exception) -> None:
+    print(exp)
+    """
+    Show basic data when DCS is disconnected.
+    :param lcd: type of Logitech keyboard with LCD
+    :param start_time: time when connection to DCS was lost
+    :param current_ver: logger.info about current version to show
+    :param support_iter: iterator for banner supporters
+    :param exp: caught exception instance
+    """
+
+
+def _prepare_socket() -> socket.socket:
+    """
+    Preparing multi-cast UDP socket for DCS-BIOS communication.
+    :return: socket object
+    """
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sock.bind(RECV_ADDR)
+    mreq = struct.pack('=4sl', socket.inet_aton(MULTICAST_IP), socket.INADDR_ANY)
+    sock.setsockopt(socket.IPPROTO_IP, socket.IP_ADD_MEMBERSHIP, mreq)
+    sock.settimeout(1)
+    return sock
+
+def update_display(address, data):
+    #print(hex(address))
+    if hex(address) == '0x7494':
+        print("RPM R:")
+        data_bytes = struct.pack("<H", data)
+        print(int(data_bytes))
+    if hex(address) == '0x7496':
+        print("RPM L:")
+        data_bytes = struct.pack("<H", data)
+        print(int(data_bytes))
  
 window_surface = pygame.display.set_mode((800, 480))
 background = pygame.Surface((800, 480))
